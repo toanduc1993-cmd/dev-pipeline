@@ -20,6 +20,7 @@ model Project {
 
   sprints       Sprint[]
   notifications Notification[]
+  deployConfig  DeployConfig?
 }
 
 model Sprint {
@@ -32,17 +33,20 @@ model Sprint {
   currentGateNumber Int      @default(0)
   currentStep       Int      @default(0)
   isProcessing      Boolean  @default(false)
+  claudePid         Int?
 
   requirementText   String?
   requirementFile   String?
   masterContext     String?
+  metadata          String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   gates   Gate[]
-  tasks   Task[]
+  tasks          Task[]
+  notifications  Notification[]
 
   @@unique([projectId, number])
 }
@@ -55,7 +59,8 @@ model Gate {
 
   title       String
   description String?
-  notes       String?
+  notes          String?
+  structuredData String?
   poComment   String?
 
   approvedAt  DateTime?
@@ -127,6 +132,7 @@ model Notification {
   id        String   @id @default(cuid())
   projectId String?
   sprintId  String?
+  sprint    Sprint?  @relation(fields: [sprintId], references: [id], onDelete: SetNull)
 
   type    String
   title   String
@@ -139,6 +145,44 @@ model Notification {
   createdAt DateTime @default(now())
 
   project Project? @relation(fields: [projectId], references: [id])
+}
+
+model DeployConfig {
+  id        String @id @default(cuid())
+  projectId String @unique
+
+  // Local setup
+  localPort     Int?     @default(3000)
+  localSetupCmd String?  // Custom setup command override
+  localStartCmd String?  // Custom start command override
+
+  // UAT Deploy — Vercel
+  vercelToken     String?
+  vercelProjectId String?
+  vercelTeamId    String?
+
+  // UAT Deploy — Database
+  uatDbProvider String?  // postgres | mysql | mongodb | supabase | planetscale
+  uatDbUrl     String?   // Connection string
+
+  // UAT Deploy — Git
+  gitRemoteUrl String?   // For auto-push
+  gitBranch    String?   @default("main")
+  gitToken     String?   // PAT for push
+
+  // UAT Deploy — Custom
+  customDeployCmd String?  // Custom deploy script
+
+  // Status
+  localSetupDone Boolean @default(false)
+  uatDeployDone  Boolean @default(false)
+  localUrl       String?
+  uatUrl         String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model PipelineConfig {

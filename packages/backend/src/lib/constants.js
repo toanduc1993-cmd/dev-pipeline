@@ -55,4 +55,4 @@ export const CLAUDE_TOOLS = {
 export const MAX_PARALLEL_AGENTS = 1;
 export const MAX_RETRY_ROUNDS    = 3;
 export const TASK_TIMEOUT_MS     = 45 * 60 * 1000;
-export const CLAUDE_TIMEOUT_MS   = 10 * 60 * 1000;
+export const CLAUDE_TIMEOUT_MS   = 15 * 60 * 1000;  // 15 min — complex prompts need more time

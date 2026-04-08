@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Dev Pipeline — System Presentation</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  :root {
+    --blue-600: #2563eb;
+    --blue-500: #3b82f6;
+    --blue-100: #dbeafe;
+    --green-500: #22c55e;
+    --green-100: #dcfce7;
+    --amber-500: #f59e0b;
+    --amber-100: #fef3c7;
+    --purple-600: #9333ea;
+    --purple-100: #f3e8ff;
+    --red-500: #ef4444;
+    --red-100: #fee2e2;
+    --orange-500: #f97316;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    --terminal-bg: #0F172A;
+    --terminal-text: #86EFAC;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #000; overflow: hidden; }
+
+  .slide-container {
+    width: 100vw; height: 100vh;
+    overflow: hidden; position: relative;
+  }
+
+  .slide {
+    width: 100%; height: 100%;
+    position: absolute; top: 0; left: 0;
+    display: none; flex-direction: column;
+    justify-content: center; align-items: center;
+    padding: 60px 80px;
+    opacity: 0; transition: opacity 0.5s ease;
+  }
+  .slide.active { display: flex; opacity: 1; }
+
+  /* Slide backgrounds */
+  .bg-dark { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; }
+  .bg-light { background: var(--gray-50); color: var(--gray-800); }
+  .bg-blue { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%); color: white; }
+  .bg-gradient { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 30%, #4338ca 60%, #6366f1 100%); color: white; }
+  .bg-white-clean { background: #ffffff; color: var(--gray-800); }
+
+  /* Typography */
+  .title-hero { font-size: 56px; font-weight: 800; line-height: 1.1; letter-spacing: -2px; }
+  .title-lg { font-size: 42px; font-weight: 700; line-height: 1.2; letter-spacing: -1px; }
+  .title-md { font-size: 32px; font-weight: 700; line-height: 1.3; }
+  .subtitle { font-size: 22px; font-weight: 400; opacity: 0.8; margin-top: 16px; line-height: 1.5; }
+  .text-body { font-size: 17px; line-height: 1.7; }
+  .text-sm { font-size: 14px; line-height: 1.6; }
+  .text-xs { font-size: 12px; }
+  .text-mono { font-family: 'SF Mono', 'Fira Code', monospace; }
+  .fw-600 { font-weight: 600; }
+  .fw-500 { font-weight: 500; }
+
+  /* Layout */
+  .full-width { width: 100%; }
+  .flex-col { display: flex; flex-direction: column; }
+  .flex-row { display: flex; flex-direction: row; }
+  .gap-8 { gap: 8px; } .gap-12 { gap: 12px; } .gap-16 { gap: 16px; }
+  .gap-20 { gap: 20px; } .gap-24 { gap: 24px; } .gap-32 { gap: 32px; }
+  .gap-40 { gap: 40px; } .gap-48 { gap: 48px; }
+  .align-center { align-items: center; }
+  .justify-center { justify-content: center; }
+  .text-center { text-align: center; }
+  .text-left { text-align: left; }
+  .mt-8 { margin-top: 8px; } .mt-12 { margin-top: 12px; }
+  .mt-16 { margin-top: 16px; } .mt-24 { margin-top: 24px; }
+  .mt-32 { margin-top: 32px; } .mt-40 { margin-top: 40px; }
+
+  /* Badges */
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 12px; border-radius: 20px;
+    font-size: 13px; font-weight: 500;
+  }
+  .badge-blue { background: var(--blue-100); color: var(--blue-600); }
+  .badge-green { background: var(--green-100); color: #16a34a; }
+  .badge-amber { background: var(--amber-100); color: #b45309; }
+  .badge-red { background: var(--red-100); color: var(--red-500); }
+  .badge-purple { background: var(--purple-100); color: var(--purple-600); }
+  .badge-gray { background: var(--gray-100); color: var(--gray-600); }
+
+  /* Cards */
+  .card {
+    background: white; border-radius: 16px;
+    border: 1px solid var(--gray-200);
+    padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .card-dark {
+    background: rgba(255,255,255,0.08); border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 24px; backdrop-filter: blur(10px);
+  }
+  .card-blue {
+    background: rgba(59,130,246,0.1); border-radius: 16px;
+    border: 1px solid rgba(59,130,246,0.25); padding: 20px;
+  }
+  .card-green {
+    background: rgba(34,197,94,0.08); border-radius: 12px;
+    border: 1px solid rgba(34,197,94,0.2); padding: 16px;
+  }
+
+  /* Pipeline Flow */
+  .pipeline-flow {
+    display: flex; align-items: center; gap: 0;
+    width: 100%; justify-content: center;
+  }
+  .pipeline-node {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    min-width: 80px;
+  }
+  .pipeline-circle {
+    width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; color: white;
+  }
+  .pipeline-label { font-size: 11px; font-weight: 500; text-align: center; max-width: 70px; }
+  .pipeline-arrow { width: 30px; height: 2px; background: var(--gray-300); margin: 0 2px; margin-bottom: 22px; }
+  .pipeline-arrow.done { background: var(--green-500); }
+
+  .pc-green { background: var(--green-500); }
+  .pc-blue { background: var(--blue-500); }
+  .pc-amber { background: var(--amber-500); }
+  .pc-gray { background: var(--gray-200); color: var(--gray-500); }
+  .pc-purple { background: var(--purple-600); }
+
+  /* Agent Cards */
+  .agent-card {
+    border-radius: 12px; padding: 16px;
+    border: 1px solid; min-width: 160px;
+  }
+  .agent-idle { background: var(--gray-50); border-color: var(--gray-200); }
+  .agent-running { background: #eff6ff; border-color: #93c5fd; }
+  .agent-done { background: #f0fdf4; border-color: #86efac; }
+
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    display: inline-block;
+  }
+  .dot-green { background: var(--green-500); }
+  .dot-blue { background: var(--blue-500); animation: pulse 1.5s infinite; }
+  .dot-gray { background: var(--gray-400); }
+  .dot-amber { background: var(--amber-500); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* Terminal */
+  .terminal {
+    background: var(--terminal-bg); border-radius: 12px;
+    padding: 20px; font-family: 'SF Mono', monospace;
+    color: var(--terminal-text); font-size: 13px;
+    line-height: 1.6; overflow: hidden;
+  }
+  .terminal-header {
+    display: flex; gap: 6px; margin-bottom: 12px;
+  }
+  .terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .td-red { background: #ef4444; } .td-yellow { background: #eab308; } .td-green { background: #22c55e; }
+
+  /* Gate card mock */
+  .gate-mock {
+    border-radius: 12px; padding: 16px; border: 1px solid;
+  }
+  .gate-pending { background: var(--gray-50); border-color: var(--gray-200); }
+  .gate-waiting { background: #fffbeb; border-color: #fcd34d; }
+  .gate-approved { background: #f0fdf4; border-color: #86efac; }
+
+  /* Score table */
+  .score-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .score-table th { text-align: left; padding: 12px 16px; font-weight: 600; border-bottom: 2px solid var(--gray-200); }
+  .score-table td { padding: 10px 16px; border-bottom: 1px solid var(--gray-100); }
+  .score-table tr:hover td { background: var(--gray-50); }
+  .score-highlight { color: var(--green-500); font-weight: 700; font-size: 18px; }
+
+  /* Navigation */
+  .nav {
+    position: fixed; bottom: 30px; right: 40px;
+    display: flex; gap: 8px; z-index: 100;
+  }
+  .nav button {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+    color: white; font-size: 18px; cursor: pointer;
+    transition: all 0.2s; backdrop-filter: blur(10px);
+  }
+  .nav button:hover { background: rgba(255,255,255,0.25); }
+  .nav-light button { background: rgba(0,0,0,0.08); border-color: rgba(0,0,0,0.15); color: var(--gray-700); }
+  .nav-light button:hover { background: rgba(0,0,0,0.12); }
+
+  .slide-counter {
+    position: fixed; bottom: 36px; left: 40px;
+    font-size: 13px; font-weight: 500; z-index: 100;
+    opacity: 0.5;
+  }
+  .counter-light { color: var(--gray-500); }
+  .counter-dark { color: rgba(255,255,255,0.5); }
+
+  /* Decorative */
+  .glow-circle {
+    position: absolute; width: 400px; height: 400px;
+    border-radius: 50%; filter: blur(120px); opacity: 0.15;
+  }
+  .accent-line {
+    width: 60px; height: 4px; border-radius: 2px;
+    background: linear-gradient(90deg, var(--blue-500), var(--purple-600));
+  }
+
+  /* Sidebar mock */
+  .sidebar-mock {
+    width: 200px; background: white; border-right: 1px solid var(--gray-200);
+    padding: 16px; border-radius: 12px 0 0 12px; flex-shrink: 0;
+  }
+  .sidebar-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px; border-radius: 8px; font-size: 13px; color: var(--gray-600);
+    margin-bottom: 2px;
+  }
+  .sidebar-item.active { background: var(--blue-100); color: var(--blue-600); font-weight: 600; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+  .highlight { color: var(--blue-500); }
+  .highlight-green { color: var(--green-500); }
+  .highlight-purple { color: var(--purple-600); }
+
+  .divider { width: 100%; height: 1px; background: rgba(255,255,255,0.1); margin: 20px 0; }
+  .divider-light { background: var(--gray-200); }
+
+  .feature-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .fi-blue { background: var(--blue-100); }
+  .fi-green { background: var(--green-100); }
+  .fi-purple { background: var(--purple-100); }
+  .fi-amber { background: var(--amber-100); }
+  .fi-red { background: var(--red-100); }
+</style>
+</head>
+<body>
+
+<div class="slide-container" id="slides">
+
+<!-- ==================== SLIDE 1: TITLE ==================== -->
+<div class="slide bg-gradient active" data-bg="dark">
+  <div class="glow-circle" style="top:-100px;left:-100px;background:#6366f1;"></div>
+  <div class="glow-circle" style="bottom:-150px;right:-50px;background:#3b82f6;"></div>
+  <div style="position:relative;z-index:1;text-align:center;max-width:900px;">
+    <div style="display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,0.1);padding:8px 20px;border-radius:30px;border:1px solid rgba(255,255,255,0.15);font-size:14px;font-weight:500;margin-bottom:32px;">
+      🤖 AI-Powered Software Development
+    </div>
+    <h1 class="title-hero">AI Dev Pipeline</h1>
+    <p class="subtitle" style="max-width:650px;margin:20px auto 0;">
+      Hệ thống tự động hóa quy trình phát triển phần mềm<br>
+      sử dụng multi-agent AI với kiểm soát chất lượng 7 cổng
+    </p>
+    <div style="margin-top:48px;display:flex;gap:12px;justify-content:center;">
+      <span class="badge" style="background:rgba(255,255,255,0.12);color:white;border:1px solid rgba(255,255,255,0.2);">14 AI Agents</span>
+      <span class="badge" style="background:rgba(255,255,255,0.12);color:white;border:1px solid rgba(255,255,255,0.2);">7 Quality Gates</span>
+      <span class="badge" style="background:rgba(255,255,255,0.12);color:white;border:1px solid rgba(255,255,255,0.2);">3-Layer QA</span>
+      <span class="badge" style="background:rgba(255,255,255,0.12);color:white;border:1px solid rgba(255,255,255,0.2);">Real-time UI</span>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 2: PROBLEM ==================== -->
+<div class="slide bg-dark" data-bg="dark">
+  <div style="max-width:1000px;width:100%;">
+    <div class="accent-line" style="margin-bottom:24px;"></div>
+    <h2 class="title-lg">Vấn đề cần giải quyết</h2>
+    <p class="subtitle" style="max-width:700px;">AI có thể viết code, nhưng ai kiểm soát chất lượng?</p>
+    <div class="grid-2 mt-40" style="gap:24px;">
+      <div class="card-dark flex-col gap-16">
+        <div style="font-size:32px;">⚠️</div>
+        <div>
+          <div class="fw-600" style="font-size:17px;">AI chạy không kiểm soát</div>
+          <div class="text-sm mt-8" style="opacity:0.6;">Không có checkpoint → code sai lan rộng, PO chỉ phát hiện khi đã quá muộn</div>
+        </div>
+      </div>
+      <div class="card-dark flex-col gap-16">
+        <div style="font-size:32px;">🔄</div>
+        <div>
+          <div class="fw-600" style="font-size:17px;">Không có quy trình QA</div>
+          <div class="text-sm mt-8" style="opacity:0.6;">AI tự viết, tự review → bias confirmation. Cần agents độc lập kiểm tra chéo</div>
+        </div>
+      </div>
+      <div class="card-dark flex-col gap-16">
+        <div style="font-size:32px;">🎯</div>
+        <div>
+          <div class="fw-600" style="font-size:17px;">Thiếu context liên tục</div>
+          <div class="text-sm mt-8" style="opacity:0.6;">Mỗi lần gọi AI bắt đầu từ zero. Không nhớ quyết định trước, dễ conflict</div>
+        </div>
+      </div>
+      <div class="card-dark flex-col gap-16">
+        <div style="font-size:32px;">👤</div>
+        <div>
+          <div class="fw-600" style="font-size:17px;">PO không biết gì đang xảy ra</div>
+          <div class="text-sm mt-8" style="opacity:0.6;">Không có visibility, progress, hay cách can thiệp khi AI đi sai hướng</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 3: SOLUTION OVERVIEW ==================== -->
+<div class="slide bg-light" data-bg="light">
+  <div style="max-width:1000px;width:100%;">
+    <div class="accent-line" style="margin-bottom:24px;"></div>
+    <h2 class="title-lg" style="color:var(--gray-900);">Giải pháp: Multi-Gate Pipeline</h2>
+    <p class="subtitle" style="color:var(--gray-500);max-width:700px;">7 cổng kiểm soát — PO duyệt từng bước — AI không thể "chạy mất kiểm soát"</p>
+
+    <div class="mt-40" style="background:white;border-radius:20px;border:1px solid var(--gray-200);padding:40px;box-shadow:0 4px 20px rgba(0,0,0,0.04);">
+      <div class="pipeline-flow">
+        <div class="pipeline-node">
+          <div class="pipeline-circle pc-green">0</div>
+          <div class="pipeline-label" style="color:var(--gray-700);">Phân tích<br>yêu cầu</div>
+        </div>
+        <div class="pipeline-arrow done"></div>
+        <div class="pipeline-node">
+          <div class="pipeline-circle pc-green">1</div>
+          <div class="pipeline-label" style="color:var(--gray-700);">Kiến trúc</div>
+        </div>
+        <div class="pipeline-arrow done"></div>
+        <div class="pipeline-node">
+          <div class="pipeline-circle pc-amber">🔒</div>
+          <div class="pipeline-label" style="color:var(--gray-700);">PO<br>Duyệt</div>
+        </div>
+        <div class="pipeline-arrow"></div>
+        <div class="pipeline-node">
+          <div class="pipeline-circle pc-blue">2</div>
+          <div class="pipeline-label" style="color:var(--gray-700);">Đặc tả<br>chi tiết</div>
+        </div>
+        <div class="pipeline-arrow"></div>
+        <div class="pipeline-node">
+          <div class="pipeline-circle pc-blue">3</div>
+          <div class="pipeline-label" style="color:var(--gray-700);">Chia<br>tác vụ</div>
+        </div>
+        <div class="pipeline-arrow"></div>
+        <div class="pipeline-node">
+          <div class="pipeline-circle pc-purple">4</div>
+          <div class="pipeline-label" style="color:var(--gray-700);">Lập<br>trình</div>
+        </div>
+        <div class="pipeline-arrow"></div>
+        <div class="pipeline-node">
+          <div class="pipeline-circle pc-purple">5</div>
+          <div class="pipeline-label" style="color:var(--gray-700);">QA<br>3 lớp</div>
+        </div>
+        <div class="pipeline-arrow"></div>
+        <div class="pipeline-node">
+          <div class="pipeline-circle pc-green">6</div>
+          <div class="pipeline-label" style="color:var(--gray-700);">Merge</div>
+        </div>
+      </div>
+
+      <div class="mt-32 grid-3" style="gap:16px;">
+        <div style="text-align:center;padding:16px;background:var(--blue-100);border-radius:12px;">
+          <div style="font-size:13px;font-weight:600;color:var(--blue-600);">🔍 Phân tích & Thiết kế</div>
+          <div style="font-size:11px;color:var(--gray-500);margin-top:4px;">Reception → Architect → SpecWriter</div>
+        </div>
+        <div style="text-align:center;padding:16px;background:var(--purple-100);border-radius:12px;">
+          <div style="font-size:13px;font-weight:600;color:var(--purple-600);">💻 Phát triển & Review</div>
+          <div style="font-size:11px;color:var(--gray-500);margin-top:4px;">Developer × 3 → Reviewer → Integration</div>
+        </div>
+        <div style="text-align:center;padding:16px;background:var(--green-100);border-radius:12px;">
+          <div style="font-size:13px;font-weight:600;color:#16a34a;">✅ Kiểm tra & Giao hàng</div>
+          <div style="font-size:11px;color:var(--gray-500);margin-top:4px;">Contract → QA Business → Merge</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 4: 14 AGENTS ==================== -->
+<div class="slide bg-dark" data-bg="dark">
+  <div style="max-width:1050px;width:100%;">
+    <div class="accent-line" style="margin-bottom:24px;"></div>
+    <h2 class="title-lg">14 AI Agents — Mỗi agent một chuyên môn</h2>
+    <p class="subtitle" style="max-width:700px;">Agents cách ly hoàn toàn — Reviewer không thấy Developer report, QA không thấy Review verdict</p>
+
+    <div class="mt-32 grid-4" style="gap:12px;">
+      <div class="card-dark" style="padding:16px;">
+        <div style="font-size:20px;margin-bottom:8px;">📋</div>
+        <div style="font-size:13px;font-weight:600;">Reception</div>
+        <div style="font-size:11px;opacity:0.5;margin-top:4px;">Phân tích yêu cầu</div>
+      </div>
+      <div class="card-dark" style="padding:16px;">
+        <div style="font-size:20px;margin-bottom:8px;">🏗️</div>
+        <div style="font-size:13px;font-weight:600;">Architect</div>
+        <div style="font-size:11px;opacity:0.5;margin-top:4px;">Thiết kế kiến trúc</div>
+      </div>
+      <div class="card-dark" style="padding:16px;">
+        <div style="font-size:20px;margin-bottom:8px;">📝</div>
+        <div style="font-size:13px;font-weight:600;">Spec Writer</div>
+        <div style="font-size:11px;opacity:0.5;margin-top:4px;">Đặc tả chi tiết</div>
+      </div>
+      <div class="card-dark" style="padding:16px;">
+        <div style="font-size:20px;margin-bottom:8px;">📦</div>
+        <div style="font-size:13px;font-weight:600;">Task Planner</div>
+        <div style="font-size:11px;opacity:0.5;margin-top:4px;">Chia tác vụ atomic</div>
+      </div>
+      <div class="card-dark" style="padding:16px;border-color:rgba(147,51,234,0.3);">
+        <div style="font-size:20px;margin-bottom:8px;">💻</div>
+        <div style="font-size:13px;font-weight:600;color:#c084fc;">Developer ×3</div>
+        <div style="font-size:11px;opacity:0.5;margin-top:4px;">Lập trình song song</div>
+      </div>
+      <div class="card-dark" style="padding:16px;">
+        <div style="font-size:20px;margin-bottom:8px;">🔍</div>
+        <div style="font-size:13px;font-weight:600;">Reviewer</div>
+        <div style="font-size:11px;opacity:0.5;margin-top:4px;">Review code độc lập</div>
+      </div>
+      <div class="card-dark" style="padding:16px;">
+        <div style="font-size:20px;margin-bottom:8px;">🔗</div>
+        <div style="font-size:13px;font-weight:600;">Integration</div>
+        <div style="font-size:11px;opacity:0.5;margin-top:4px;">Kiểm tra tích hợp</div>
+      </div>
+      <div class="card-dark" style="padding:16px;">
+        <div style="font-size:20px;margin-bottom:8px;">📜</div>
+        <div style="font-size:13px;font-weight:600;">Contract</div>
+        <div style="font-size:11px;opacity:0.5;margin-top:4px;">Zone compliance</div>
+      </div>
+      <div class="card-dark" style="padding:16px;border-color:rgba(34,197,94,0.3);">
+        <div style="font-size:20px;margin-bottom:8px;">🧪</div>
+        <div style="font-size:13px;font-weight:600;color:#86efac;">QA Engineer</div>
+        <div style="font-size:11px;opacity:0.5;margin-top:4px;">Business QA review</div>
+      </div>
+      <div class="card-dark" style="padding:16px;">
+        <div style="font-size:20px;margin-bottom:8px;">🔧</div>
+        <div style="font-size:13px;font-weight:600;">QA Fixer</div>
+        <div style="font-size:11px;opacity:0.5;margin-top:4px;">Auto-fix QA issues</div>
+      </div>
+      <div class="card-dark" style="padding:16px;">
+        <div style="font-size:20px;margin-bottom:8px;">🩺</div>
+        <div style="font-size:13px;font-weight:600;">Diagnostician</div>
+        <div style="font-size:11px;opacity:0.5;margin-top:4px;">Tìm root cause bug</div>
+      </div>
+      <div class="card-dark" style="padding:16px;">
+        <div style="font-size:20px;margin-bottom:8px;">🔨</div>
+        <div style="font-size:13px;font-weight:600;">Fixer + Verifier</div>
+        <div style="font-size:11px;opacity:0.5;margin-top:4px;">Fix & verify bugfix</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 5: UI - DASHBOARD ==================== -->
+<div class="slide bg-light" data-bg="light">
+  <div style="max-width:1050px;width:100%;">
+    <div class="accent-line" style="margin-bottom:24px;"></div>
+    <h2 class="title-lg" style="color:var(--gray-900);">Dashboard — Quản lý dự án</h2>
+
+    <div class="mt-32" style="background:white;border-radius:16px;border:1px solid var(--gray-200);overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.08);">
+      <!-- Mock Header -->
+      <div style="height:42px;background:white;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;padding:0 16px;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:12px;color:var(--gray-500);">AI Dev Pipeline</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--green-500);"></div>
+          <span style="font-size:11px;color:var(--gray-400);">Connected</span>
+          <span style="font-size:14px;margin-left:8px;">🔔</span>
+        </div>
+      </div>
+
+      <div style="display:flex;">
+        <!-- Sidebar -->
+        <div class="sidebar-mock">
+          <div style="font-size:16px;font-weight:700;color:var(--blue-600);padding:8px 12px;margin-bottom:12px;">🤖 ADIP</div>
+          <div class="sidebar-item active">📊 Dashboard</div>
+          <div class="sidebar-item">🚀 RE-A DIP</div>
+          <div class="sidebar-item">💼 Test 6</div>
+          <div class="sidebar-item" style="margin-top:16px;border-top:1px solid var(--gray-100);padding-top:16px;">🤖 Agents</div>
+          <div class="sidebar-item">🔔 Thông báo</div>
+          <div class="sidebar-item">⚙️ Cài đặt</div>
+        </div>
+
+        <!-- Main content -->
+        <div style="flex:1;padding:24px;background:var(--gray-50);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <div>
+              <div style="font-size:18px;font-weight:700;color:var(--gray-800);">Dự án</div>
+              <div style="font-size:12px;color:var(--gray-400);">Quản lý tất cả dự án AI Dev Pipeline</div>
+            </div>
+            <div style="background:var(--blue-600);color:white;padding:6px 16px;border-radius:8px;font-size:12px;font-weight:600;">+ Tạo dự án</div>
+          </div>
+
+          <!-- Stats -->
+          <div class="grid-3" style="margin-bottom:20px;gap:12px;">
+            <div style="background:white;border-radius:12px;padding:14px;border:1px solid var(--gray-200);">
+              <div style="font-size:11px;color:var(--gray-400);">Tổng dự án</div>
+              <div style="font-size:24px;font-weight:700;color:var(--gray-800);">3</div>
+            </div>
+            <div style="background:white;border-radius:12px;padding:14px;border:1px solid var(--gray-200);">
+              <div style="font-size:11px;color:var(--gray-400);">Tổng sprints</div>
+              <div style="font-size:24px;font-weight:700;color:var(--blue-600);">12</div>
+            </div>
+            <div style="background:white;border-radius:12px;padding:14px;border:1px solid var(--gray-200);">
+              <div style="font-size:11px;color:var(--gray-400);">Đang hoạt động</div>
+              <div style="font-size:24px;font-weight:700;color:var(--green-500);">2</div>
+            </div>
+          </div>
+
+          <!-- Project cards -->
+          <div class="grid-2" style="gap:12px;">
+            <div style="background:white;border-radius:12px;padding:16px;border:1px solid var(--gray-200);">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div style="font-size:14px;font-weight:600;color:var(--gray-800);">RE-A DIP</div>
+                <span class="badge badge-blue" style="font-size:10px;padding:2px 8px;">javascript</span>
+              </div>
+              <div style="font-size:11px;color:var(--gray-400);margin-top:6px;">Real Estate AI Platform</div>
+              <div style="font-size:11px;color:var(--gray-500);margin-top:8px;">4 sprints · <span style="color:var(--green-500);">2 hoàn thành</span></div>
+            </div>
+            <div style="background:white;border-radius:12px;padding:16px;border:1px solid var(--gray-200);">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div style="font-size:14px;font-weight:600;color:var(--gray-800);">Test 6</div>
+                <span class="badge badge-blue" style="font-size:10px;padding:2px 8px;">javascript</span>
+              </div>
+              <div style="font-size:11px;color:var(--gray-400);margin-top:6px;">Testing project</div>
+              <div style="font-size:11px;color:var(--gray-500);margin-top:8px;">0 sprints</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 6: UI - PIPELINE VIEW ==================== -->
+<div class="slide bg-white-clean" data-bg="light">
+  <div style="max-width:1050px;width:100%;">
+    <div class="accent-line" style="margin-bottom:24px;"></div>
+    <h2 class="title-lg" style="color:var(--gray-900);">Pipeline View — Theo dõi real-time</h2>
+
+    <div class="mt-24" style="background:var(--gray-50);border-radius:16px;border:1px solid var(--gray-200);overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.06);">
+      <!-- Pipeline flow mini -->
+      <div style="background:white;padding:20px 24px;border-bottom:1px solid var(--gray-200);">
+        <div style="display:flex;align-items:center;gap:6px;justify-content:center;">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--green-500);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;">✓</div>
+          <div style="width:24px;height:2px;background:var(--green-500);"></div>
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--green-500);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;">✓</div>
+          <div style="width:24px;height:2px;background:var(--green-500);"></div>
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--green-500);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;">✓</div>
+          <div style="width:24px;height:2px;background:var(--green-500);"></div>
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--green-500);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;">✓</div>
+          <div style="width:24px;height:2px;background:var(--blue-500);"></div>
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--blue-500);color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;">4</div>
+          <div style="width:24px;height:2px;background:var(--gray-200);"></div>
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--gray-200);color:var(--gray-500);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;">5</div>
+          <div style="width:24px;height:2px;background:var(--gray-200);"></div>
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--gray-200);color:var(--gray-500);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;">6</div>
+        </div>
+        <div style="text-align:center;margin-top:8px;font-size:12px;color:var(--blue-600);font-weight:600;">Step 4: Lập trình — 3 agents đang chạy</div>
+      </div>
+
+      <div style="display:flex;gap:16px;padding:20px;">
+        <!-- Left: Gate + Tasks -->
+        <div style="flex:2;display:flex;flex-direction:column;gap:12px;">
+          <!-- Stats -->
+          <div class="grid-4" style="gap:8px;">
+            <div style="background:white;border-radius:8px;padding:10px;text-align:center;border:1px solid var(--gray-200);">
+              <div style="font-size:18px;font-weight:700;color:var(--green-500);">3</div>
+              <div style="font-size:10px;color:var(--gray-400);">Passed</div>
+            </div>
+            <div style="background:white;border-radius:8px;padding:10px;text-align:center;border:1px solid #93c5fd;">
+              <div style="font-size:18px;font-weight:700;color:var(--blue-600);">2</div>
+              <div style="font-size:10px;color:var(--gray-400);">Running</div>
+            </div>
+            <div style="background:white;border-radius:8px;padding:10px;text-align:center;border:1px solid var(--gray-200);">
+              <div style="font-size:18px;font-weight:700;color:var(--gray-500);">1</div>
+              <div style="font-size:10px;color:var(--gray-400);">Pending</div>
+            </div>
+            <div style="background:white;border-radius:8px;padding:10px;text-align:center;border:1px solid var(--gray-200);">
+              <div style="font-size:18px;font-weight:700;color:var(--orange-500);">0</div>
+              <div style="font-size:10px;color:var(--gray-400);">Escalated</div>
+            </div>
+          </div>
+
+          <!-- Gate card waiting -->
+          <div class="gate-mock gate-waiting">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:11px;font-weight:700;font-family:monospace;color:var(--amber-500);">G1</span>
+                <span style="font-size:13px;font-weight:600;color:var(--gray-700);">Architecture Review</span>
+              </div>
+              <span class="badge badge-green" style="font-size:10px;padding:2px 8px;">✓ Approved</span>
+            </div>
+          </div>
+          <div class="gate-mock gate-approved">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:11px;font-weight:700;font-family:monospace;color:#16a34a;">G3</span>
+                <span style="font-size:13px;font-weight:600;color:var(--gray-700);">Task Plan — 6 tasks</span>
+              </div>
+              <span class="badge badge-green" style="font-size:10px;padding:2px 8px;">✓ Approved</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Agents -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+          <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:2px;">Developer Agents</div>
+          <!-- DEV-1 Running -->
+          <div class="agent-card agent-running" style="padding:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span style="font-size:14px;">💻</span>
+                <span style="font-size:12px;font-weight:600;color:var(--blue-600);">DEV-1</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:4px;">
+                <div class="status-dot dot-blue"></div>
+                <span style="font-size:10px;color:var(--blue-600);">Coding</span>
+              </div>
+            </div>
+            <div style="font-size:11px;color:var(--gray-500);margin-top:6px;">TASK-001: User authentication</div>
+            <div style="margin-top:6px;height:3px;background:#dbeafe;border-radius:2px;">
+              <div style="width:60%;height:100%;background:var(--blue-500);border-radius:2px;"></div>
+            </div>
+            <div style="font-size:9px;color:var(--gray-400);margin-top:3px;">R1/3 · 12:34</div>
+          </div>
+          <!-- DEV-2 Running -->
+          <div class="agent-card agent-running" style="padding:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span style="font-size:14px;">💻</span>
+                <span style="font-size:12px;font-weight:600;color:var(--blue-600);">DEV-2</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:4px;">
+                <div class="status-dot dot-amber"></div>
+                <span style="font-size:10px;color:#b45309;">Reviewing</span>
+              </div>
+            </div>
+            <div style="font-size:11px;color:var(--gray-500);margin-top:6px;">TASK-002: API endpoints</div>
+          </div>
+          <!-- DEV-3 Done -->
+          <div class="agent-card agent-done" style="padding:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span style="font-size:14px;">💻</span>
+                <span style="font-size:12px;font-weight:600;color:#16a34a;">DEV-3</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:4px;">
+                <div class="status-dot dot-green"></div>
+                <span style="font-size:10px;color:#16a34a;">Pass</span>
+              </div>
+            </div>
+            <div style="font-size:11px;color:var(--gray-500);margin-top:6px;">TASK-003: Database schema ✓</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 7: LIVE CODE TERMINAL ==================== -->
+<div class="slide bg-dark" data-bg="dark">
+  <div style="max-width:1000px;width:100%;">
+    <div class="accent-line" style="margin-bottom:24px;"></div>
+    <h2 class="title-lg">Live Code Output — Xem AI viết code real-time</h2>
+    <p class="subtitle" style="max-width:600px;">Mỗi Developer agent hiện code trực tiếp qua WebSocket — PO biết chính xác agent đang làm gì</p>
+
+    <div class="mt-32 grid-2" style="gap:20px;">
+      <div class="terminal" style="height:280px;">
+        <div class="terminal-header">
+          <div class="terminal-dot td-red"></div>
+          <div class="terminal-dot td-yellow"></div>
+          <div class="terminal-dot td-green"></div>
+          <span style="margin-left:8px;font-size:11px;color:var(--gray-400);">DEV-1 · TASK-001</span>
+        </div>
+        <div style="color:#94a3b8;font-size:12px;">
+          <span style="color:#64748b;">// Reading spec...</span><br>
+          <span style="color:#f472b6;">import</span> { Router } <span style="color:#f472b6;">from</span> <span style="color:#fbbf24;">'express'</span>;<br>
+          <span style="color:#f472b6;">import</span> { authMiddleware } <span style="color:#f472b6;">from</span> <span style="color:#fbbf24;">'./middleware'</span>;<br><br>
+          <span style="color:#f472b6;">const</span> <span style="color:var(--terminal-text);">router</span> = <span style="color:#60a5fa;">Router</span>();<br><br>
+          router.<span style="color:#60a5fa;">post</span>(<span style="color:#fbbf24;">'/login'</span>, <span style="color:#f472b6;">async</span> (req, res) => {<br>
+          &nbsp;&nbsp;<span style="color:#f472b6;">const</span> { email, password } = req.body;<br>
+          &nbsp;&nbsp;<span style="color:#f472b6;">const</span> user = <span style="color:#f472b6;">await</span> findUser(email);<br>
+          &nbsp;&nbsp;<span style="color:#64748b;">// verify password hash...</span><br>
+          <span style="color:#22c55e;">█</span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="card-dark">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <div style="font-size:18px;">🔄</div>
+            <div style="font-size:14px;font-weight:600;">Dev → Validate → Review</div>
+          </div>
+          <div style="font-size:13px;opacity:0.6;">Mỗi task qua 3 phase: code, syntax check, independent review. Tối đa 3 rounds retry.</div>
+        </div>
+        <div class="card-dark">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <div style="font-size:18px;">🌿</div>
+            <div style="font-size:14px;font-weight:600;">Git Worktree Isolation</div>
+          </div>
+          <div style="font-size:13px;opacity:0.6;">Mỗi task code trên branch riêng (git worktree). Không xung đột giữa các agents.</div>
+        </div>
+        <div class="card-dark">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <div style="font-size:18px;">⏱️</div>
+            <div style="font-size:14px;font-weight:600;">45-min Timeout + Escalation</div>
+          </div>
+          <div style="font-size:13px;opacity:0.6;">Task bị stuck → auto-escalate cho PO. Không loop vô hạn.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 8: QA 3-LAYER ==================== -->
+<div class="slide bg-light" data-bg="light">
+  <div style="max-width:1000px;width:100%;">
+    <div class="accent-line" style="margin-bottom:24px;"></div>
+    <h2 class="title-lg" style="color:var(--gray-900);">QA 3 lớp — Defense in Depth</h2>
+
+    <div class="mt-32 flex-row gap-20" style="align-items:stretch;">
+      <div class="card flex-col" style="flex:1;border-top:4px solid var(--blue-500);">
+        <div style="font-size:28px;margin-bottom:12px;">⚡</div>
+        <div style="font-size:16px;font-weight:700;color:var(--gray-800);">Layer 1: Automated</div>
+        <div style="font-size:13px;color:var(--gray-500);margin-top:8px;line-height:1.6;">
+          Syntax check<br>ESLint<br>Test runner<br><br>
+          <span style="color:var(--blue-600);font-weight:500;">Fail-fast: dừng ngay nếu syntax lỗi</span>
+        </div>
+      </div>
+      <div class="card flex-col" style="flex:1;border-top:4px solid var(--purple-600);">
+        <div style="font-size:28px;margin-bottom:12px;">📜</div>
+        <div style="font-size:16px;font-weight:700;color:var(--gray-800);">Layer 2: Contract</div>
+        <div style="font-size:13px;color:var(--gray-500);margin-top:8px;line-height:1.6;">
+          Zone compliance<br>Interface integrity<br>Breaking change check<br><br>
+          <span style="color:var(--purple-600);font-weight:500;">Frozen violation → Block merge bắt buộc</span>
+        </div>
+      </div>
+      <div class="card flex-col" style="flex:1;border-top:4px solid var(--green-500);">
+        <div style="font-size:28px;margin-bottom:12px;">🧪</div>
+        <div style="font-size:16px;font-weight:700;color:var(--gray-800);">Layer 3: Business</div>
+        <div style="font-size:13px;color:var(--gray-500);margin-top:8px;line-height:1.6;">
+          Chunked code review<br>Business logic check<br>Regression analysis<br><br>
+          <span style="color:#16a34a;font-weight:500;">PO chọn: Fix critical hoặc Fix all</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-24" style="background:white;border-radius:12px;border:1px solid var(--gray-200);padding:20px;display:flex;align-items:center;gap:16px;">
+      <span style="font-size:24px;">🔁</span>
+      <div>
+        <div style="font-size:14px;font-weight:600;color:var(--gray-800);">Auto-fix Cycle (max 3 rounds)</div>
+        <div style="font-size:13px;color:var(--gray-500);">QA phát hiện lỗi → QA Fixer auto-fix → Chạy lại QA. Nếu 3 lần vẫn fail → notify PO dừng.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 9: KEY FEATURES ==================== -->
+<div class="slide bg-dark" data-bg="dark">
+  <div style="max-width:1000px;width:100%;">
+    <div class="accent-line" style="margin-bottom:24px;"></div>
+    <h2 class="title-lg">Tính năng nổi bật</h2>
+
+    <div class="mt-32 grid-2" style="gap:16px;">
+      <div class="card-dark flex-row gap-16 align-center">
+        <div class="feature-icon fi-blue">📄</div>
+        <div>
+          <div style="font-size:15px;font-weight:600;">Upload tài liệu PDF/Word</div>
+          <div style="font-size:12px;opacity:0.5;margin-top:4px;">OCR tự động cho PDF image-based (vie+eng)</div>
+        </div>
+      </div>
+      <div class="card-dark flex-row gap-16 align-center">
+        <div class="feature-icon fi-purple">🧠</div>
+        <div>
+          <div style="font-size:15px;font-weight:600;">Chain-of-Thought Reasoning</div>
+          <div style="font-size:12px;opacity:0.5;margin-top:4px;">6 agents có CoT — suy nghĩ trước khi output</div>
+        </div>
+      </div>
+      <div class="card-dark flex-row gap-16 align-center">
+        <div class="feature-icon fi-green">📊</div>
+        <div>
+          <div style="font-size:15px;font-weight:600;">Sprint Auto-Planning</div>
+          <div style="font-size:12px;opacity:0.5;margin-top:4px;">Upload requirement → AI chia sprints + coverage check</div>
+        </div>
+      </div>
+      <div class="card-dark flex-row gap-16 align-center">
+        <div class="feature-icon fi-amber">🔔</div>
+        <div>
+          <div style="font-size:15px;font-weight:600;">Real-time Notifications</div>
+          <div style="font-size:12px;opacity:0.5;margin-top:4px;">WebSocket + Telegram bot — không bỏ sót gate nào</div>
+        </div>
+      </div>
+      <div class="card-dark flex-row gap-16 align-center">
+        <div class="feature-icon fi-red">🐛</div>
+        <div>
+          <div style="font-size:15px;font-weight:600;">Bugfix Pipeline</div>
+          <div style="font-size:12px;opacity:0.5;margin-top:4px;">3-agent: Diagnostician → Fixer → Verifier (max 3 attempts)</div>
+        </div>
+      </div>
+      <div class="card-dark flex-row gap-16 align-center">
+        <div class="feature-icon" style="background:rgba(255,255,255,0.08);">🗺️</div>
+        <div>
+          <div style="font-size:15px;font-weight:600;">Zone Classification</div>
+          <div style="font-size:12px;opacity:0.5;margin-top:4px;">Frozen / Guarded / Fluid — bảo vệ code quan trọng</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 10: TECH STACK & SCORES ==================== -->
+<div class="slide bg-light" data-bg="light">
+  <div style="max-width:1000px;width:100%;">
+    <div class="accent-line" style="margin-bottom:24px;"></div>
+    <h2 class="title-lg" style="color:var(--gray-900);">Tech Stack & Đánh giá</h2>
+
+    <div class="mt-32 grid-2" style="gap:24px;align-items:start;">
+      <!-- Tech stack -->
+      <div class="card">
+        <div style="font-size:15px;font-weight:700;color:var(--gray-800);margin-bottom:16px;">🛠 Tech Stack</div>
+        <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;">
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--gray-500);">Backend</span><span style="font-weight:600;">Node.js · Express · Prisma · SQLite</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--gray-500);">Frontend</span><span style="font-weight:600;">React · Vite · Tailwind · Zustand</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--gray-500);">AI Engine</span><span style="font-weight:600;">Claude CLI (Anthropic)</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--gray-500);">Real-time</span><span style="font-weight:600;">Socket.io</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--gray-500);">Git</span><span style="font-weight:600;">simple-git · Worktrees</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--gray-500);">Notifications</span><span style="font-weight:600;">Telegram Bot + Web</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--gray-500);">Validation</span><span style="font-weight:600;">Zod Schemas (15 schemas)</span></div>
+        </div>
+      </div>
+
+      <!-- Scores -->
+      <div class="card">
+        <div style="font-size:15px;font-weight:700;color:var(--gray-800);margin-bottom:16px;">📊 Quality Scores (Audit vòng 4)</div>
+        <table class="score-table">
+          <tbody>
+            <tr><td style="font-size:13px;">Pipeline Logic</td><td class="score-highlight" style="text-align:right;">9.0</td></tr>
+            <tr><td style="font-size:13px;">Agent Architecture</td><td class="score-highlight" style="text-align:right;">9.0</td></tr>
+            <tr><td style="font-size:13px;">Agent Rules</td><td class="score-highlight" style="text-align:right;">9.0</td></tr>
+            <tr><td style="font-size:13px;">Inter-agent Connectivity</td><td class="score-highlight" style="text-align:right;">9.5</td></tr>
+            <tr><td style="font-size:13px;">Context Understanding</td><td class="score-highlight" style="text-align:right;">9.0</td></tr>
+            <tr style="font-weight:700;border-top:2px solid var(--gray-200);">
+              <td style="font-size:15px;padding-top:12px;">TỔNG</td>
+              <td style="text-align:right;font-size:22px;color:var(--green-500);padding-top:12px;">9.1 / 10</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 11: CLOSING ==================== -->
+<div class="slide bg-gradient" data-bg="dark">
+  <div class="glow-circle" style="top:-100px;right:-100px;background:#6366f1;"></div>
+  <div class="glow-circle" style="bottom:-100px;left:-50px;background:#3b82f6;"></div>
+  <div style="position:relative;z-index:1;text-align:center;max-width:800px;">
+    <h1 class="title-hero" style="font-size:48px;">Sẵn sàng Production</h1>
+    <p class="subtitle" style="font-size:20px;max-width:600px;margin:20px auto 0;">
+      14 agents · 7 gates · 3-layer QA · Real-time monitoring<br>
+      <span style="opacity:0.6;">Từ yêu cầu đến code — tự động, có kiểm soát.</span>
+    </p>
+
+    <div style="margin-top:48px;display:flex;gap:32px;justify-content:center;">
+      <div style="text-align:center;">
+        <div style="font-size:36px;font-weight:800;">9.1</div>
+        <div style="font-size:13px;opacity:0.6;">/10 Quality Score</div>
+      </div>
+      <div style="width:1px;background:rgba(255,255,255,0.2);"></div>
+      <div style="text-align:center;">
+        <div style="font-size:36px;font-weight:800;">14</div>
+        <div style="font-size:13px;opacity:0.6;">AI Agents</div>
+      </div>
+      <div style="width:1px;background:rgba(255,255,255,0.2);"></div>
+      <div style="text-align:center;">
+        <div style="font-size:36px;font-weight:800;">15</div>
+        <div style="font-size:13px;opacity:0.6;">Zod Schemas</div>
+      </div>
+      <div style="width:1px;background:rgba(255,255,255,0.2);"></div>
+      <div style="text-align:center;">
+        <div style="font-size:36px;font-weight:800;">0</div>
+        <div style="font-size:13px;opacity:0.6;">Critical Issues</div>
+      </div>
+    </div>
+
+    <div style="margin-top:48px;font-size:15px;opacity:0.5;">
+      AI Dev Pipeline — Built with ❤️ and Claude
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav" id="nav">
+  <button onclick="prevSlide()" title="Previous">←</button>
+  <button onclick="nextSlide()" title="Next">→</button>
+</div>
+<div class="slide-counter" id="counter">1 / 11</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+
+  function showSlide(n) {
+    slides[current].classList.remove('active');
+    current = ((n % total) + total) % total;
+    slides[current].classList.add('active');
+
+    const bg = slides[current].dataset.bg;
+    const nav = document.getElementById('nav');
+    const counter = document.getElementById('counter');
+    nav.className = bg === 'light' ? 'nav nav-light' : 'nav';
+    counter.className = bg === 'light' ? 'slide-counter counter-light' : 'slide-counter counter-dark';
+    counter.textContent = `${current + 1} / ${total}`;
+  }
+
+  function nextSlide() { showSlide(current + 1); }
+  function prevSlide() { showSlide(current - 1); }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') { e.preventDefault(); nextSlide(); }
+    if (e.key === 'ArrowLeft' || e.key === 'Backspace') { e.preventDefault(); prevSlide(); }
+    if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+  });
+
+  // Touch support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
+  });
+</script>
+</body>
+</html>
