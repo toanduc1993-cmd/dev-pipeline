@@ -5,7 +5,9 @@ import { PromptBuilder } from '../claude/promptBuilder.js';
 import { WorktreeManager } from '../worktreeManager.js';
 import { validateTask } from '../validationService.js';
 import { TASK_STATUS, SPRINT_STATUS, TASK_TIMEOUT_MS } from '../../lib/constants.js';
+import path from 'path';
 import logger from '../../lib/logger.js';
+import { checkFiles } from './CodeQualityChecker.js';
 
 export class TaskExecutor {
   constructor(orchestrator) {
@@ -87,6 +89,13 @@ export class TaskExecutor {
       const devParsed = parseClaudeOutput(devResult.output, 'devReport');
       await prisma.task.update({ where: { id: task.id }, data: { devOutputRaw: devResult.output, devOutputParsed: devParsed.success ? JSON.stringify(devParsed.data) : null } });
 
+      // Advisory code quality check on changed files
+      try {
+        const filesCreated = (devParsed.data?.filesCreated || []).map(f => path.join(worktreePath, f.path || f));
+        const filesModified = (devParsed.data?.filesModified || []).map(f => path.join(worktreePath, f.path || f));
+        checkFiles([...filesCreated, ...filesModified], `developer-${task.taskId}`);
+      } catch {}
+
       // PHASE 2: VALIDATION
       await prisma.task.update({ where: { id: task.id }, data: { status: TASK_STATUS.VALIDATING } });
       this.orch._emit('task:updated', { taskId: task.id, status: TASK_STATUS.VALIDATING, round });
@@ -107,7 +116,7 @@ export class TaskExecutor {
       this.orch._emit('task:updated', { taskId: task.id, status: TASK_STATUS.REVIEWING, round });
 
       const gitDiff = await wtManager.getDiff(task.taskId);
-      const reviewPrompt = builder.buildReviewPrompt({ task: taskSpec, gitDiff, validationResult });
+      const reviewPrompt = builder.buildReviewPrompt({ task: taskSpec, gitDiff, validationResult, sprintNumber: sprint.number });
       const reviewResult = await runClaudeWithRetry({ prompt: reviewPrompt, tools: [], cwd: project.repoPath, sprintId: sprint.id });
       const reviewParsed = parseClaudeOutput(reviewResult.output, 'review');
 

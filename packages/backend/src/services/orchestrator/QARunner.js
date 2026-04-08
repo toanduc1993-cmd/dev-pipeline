@@ -118,6 +118,15 @@ export class QARunner {
       const fixesApplied = fixParsed.data?.fixesApplied || [];
       const fixesSkipped = fixParsed.data?.fixesSkipped || [];
 
+      // Advisory code quality check on QA-fixed files
+      try {
+        const { checkFiles } = await import('./CodeQualityChecker.js');
+        const pathMod2 = await import('path');
+        const fixedPaths = fixesApplied.map(f => pathMod2.join(project.repoPath, f.file));
+        checkFiles(fixedPaths, 'qa_fixer');
+      } catch {}
+
+
       this.runner.orch._emit('qa:fix_progress', {
         sprintId,
         phase: 'fixed',

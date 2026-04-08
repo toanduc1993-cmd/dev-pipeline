@@ -83,7 +83,19 @@ export class IntegrationVerifier {
 
       return 'proceed';
     } catch (err) {
-      logger.error({ sprintId, err: err.message }, 'Integration verify failed — proceeding to QA');
+      logger.error({ sprintId, err: err.message }, 'Integration verify failed — proceeding without integration check');
+      try {
+        await this.runner.orch.notif.send({
+          projectId: project.id,
+          sprintId,
+          type: 'warn',
+          title: '⚠️ Integration verify skipped',
+          message: `IntegrationVerifier threw an exception and was bypassed. Error: ${err.message}`,
+          payload: { sprintId },
+        });
+      } catch (notifErr) {
+        logger.warn({ notifErr: notifErr.message }, 'Failed to send IntegrationVerifier skip notification');
+      }
       return 'proceed';
     }
   }

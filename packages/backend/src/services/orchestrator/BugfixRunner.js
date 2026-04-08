@@ -58,7 +58,7 @@ export class BugfixRunner {
       } catch {}
 
       const diagnosePrompt = builder.buildBugDiagnosePrompt({
-        errorDescription: attempt > 1 ? `${errorDescription}\n\n[LAN ${attempt}] Fix truoc chua thanh cong:\n${errorLogs}` : errorDescription,
+        errorDescription: attempt > 1 ? `${errorDescription}\n\n[Attempt ${attempt}] Previous fix did not resolve the issue:\n${errorLogs}` : errorDescription,
         fileTree, errorLogs,
       });
 
@@ -66,7 +66,7 @@ export class BugfixRunner {
 
       if (!diagResult.success) { logger.error({ attempt }, 'Diagnostician failed'); continue; }
 
-      const diagParsed = parseClaudeOutput(diagResult.output, null);
+      const diagParsed = parseClaudeOutput(diagResult.output, 'bugDiagnose');
       const fixPlan = diagParsed.data?.fixPlan || [];
       const rootCause = diagParsed.data?.rootCause || 'Unknown';
 
@@ -88,7 +88,7 @@ export class BugfixRunner {
 
       if (!fixResult.success) { logger.error({ attempt }, 'Fixer failed'); continue; }
 
-      const fixParsed = parseClaudeOutput(fixResult.output, null);
+      const fixParsed = parseClaudeOutput(fixResult.output, 'bugFix');
       const filesFixed = fixParsed.data?.filesFixed || [];
       logger.info({ attempt, filesFixed: filesFixed.length }, 'Fixer completed');
 
@@ -100,7 +100,7 @@ export class BugfixRunner {
 
       const verifyPrompt = builder.buildBugVerifyPrompt({ errorDescription, fixResult: fixParsed.data || {}, originalSpec, sprintNumber });
       const verifyResult = await runClaudeWithRetry({ prompt: verifyPrompt, tools: ['Read', 'Bash'], cwd: repoPath });
-      const verifyParsed = parseClaudeOutput(verifyResult.output, null);
+      const verifyParsed = parseClaudeOutput(verifyResult.output, 'bugVerify');
       const verified = verifyParsed.data?.status === 'PASS';
 
       if (verified) {

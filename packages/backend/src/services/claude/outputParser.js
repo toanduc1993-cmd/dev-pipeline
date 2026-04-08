@@ -194,6 +194,33 @@ const schemas = {
     verdict: z.enum(['FULL_COVERAGE', 'PARTIAL', 'MISSING_CRITICAL']),
     summary: z.string(),
   }),
+
+  bugDiagnose: z.object({
+    rootCause: z.string(),
+    affectedFiles: z.array(z.string()),
+    severity: z.enum(['critical', 'major', 'minor']).default('major'),
+    fixPlan: z.array(z.object({
+      file: z.string(),
+      action: z.enum(['modify', 'create']),
+      instruction: z.string(),
+    })),
+    notes: z.string().optional(),
+  }),
+
+  bugFix: z.object({
+    status: z.enum(['DONE', 'PARTIAL']),
+    filesFixed: z.array(z.object({ file: z.string(), description: z.string() })),
+    filesSkipped: z.array(z.object({ file: z.string(), reason: z.string() })).default([]),
+    syntaxCheckResults: z.array(z.object({ file: z.string(), passed: z.boolean() })).default([]),
+    commitHash: z.string().nullable().optional(),
+  }),
+
+  bugVerify: z.object({
+    tests: z.array(z.object({ name: z.string(), passed: z.boolean(), output: z.string().optional() })),
+    newErrors: z.array(z.string()).default([]),
+    specCompliance: z.string().optional(),
+    status: z.enum(['PASS', 'FAIL']),
+  }),
 };
 
 // ─── Main parse function ─────────────────────────────────────────────────────

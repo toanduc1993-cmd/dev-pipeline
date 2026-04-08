@@ -367,6 +367,15 @@ ${requirement}
 }
 \`\`\`
 
+## BRIEF COMPLETENESS CHECK
+Before analyzing requirements, check the project brief for these essential sections.
+If any are missing, add to gaps[] with severity "important" and message "project-brief missing section: [name]":
+- Stack / Technology declaration
+- Folder structure or module boundaries
+- Zone classification (FROZEN/GUARDED/FLUID files)
+- Explicit constraints or NOT ALLOWED rules
+- Definition of Done criteria
+
 ## REASONING PROCESS (write before outputting JSON)
 Before outputting JSON, briefly write:
 1. What features did I identify in the requirement?
@@ -1223,16 +1232,16 @@ OUTPUT LIMITS:
 
 ${conventions ? `## CODING CONVENTIONS\n${conventions}` : ''}
 
-## LOI GOC (de hieu context)
+## ROOT CAUSE (for context)
 ${errorDescription}
 
-## FIX PLAN (tu Diagnostician — lam theo CHINH XAC)
+## FIX PLAN (from Diagnostician — follow EXACTLY)
 ${JSON.stringify(fixPlan, null, 2)}
 
-## QUY TRINH BAT BUOC
-1. Doc file can sua (Read tool)
-2. Sua code theo dung instruction trong fix plan
-3. Sau moi file: chay syntax check (node --check hoac python3 -c "import ...")
+## MANDATORY PROCESS
+1. Read the file to fix (Read tool)
+2. Modify code exactly according to fix plan instructions
+3. After each file: run syntax check (node --check or python3 -c "import ...")
 4. git add -A && git commit -m "fix: bug fix"
 
 ## OUTPUT FORMAT
@@ -1242,7 +1251,7 @@ ${JSON.stringify(fixPlan, null, 2)}
   "filesFixed": [{ "file": "string", "description": "string" }],
   "filesSkipped": [{ "file": "string", "reason": "string" }],
   "syntaxCheckResults": [{ "file": "string", "passed": true }],
-  "commitHash": "string hoac null"
+  "commitHash": "string or null"
 }
 \`\`\``;
   }
